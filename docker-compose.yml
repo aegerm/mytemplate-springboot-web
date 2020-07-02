@@ -1,0 +1,29 @@
+version: '3.1'
+
+services:
+  mysql-system:
+    image: mysql
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=db_sboot
+      - MYSQL_USER=aegerm
+      - MYSQL_PASSWORD=sysdb
+    volumes:
+      - microservices_aegerm:/var/lib/mysql
+
+  application-service:
+    image: application-service:springboot-web-container
+    ports:
+      - 8080:8080
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-system:3306/db_sboot?autoReconnect=true&useSSL=false
+    build:
+      context: ./
+      dockerfile: docker/Dockerfile
+    depends_on:
+      - mysql-system
+
+volumes:
+  microservices_aegerm:
